@@ -5,52 +5,220 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zufälliger Fun Fact</title>
     <style>
-        /* Ein bisschen Styling für die Optik */
-        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background-color: #f4f4f9; }
-        #fact-container { font-size: 24px; font-weight: bold; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-top: 10px; }
-        #category-container { font-size: 14px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            background-color: #f4f4f9; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            min-height: 90vh; 
+            margin: 0; 
+            padding: 20px;
+        }
+        #fact-container { 
+            font-size: 22px; 
+            font-weight: bold; 
+            padding: 30px; 
+            background: white; 
+            border-radius: 15px; 
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1); 
+            max-width: 500px; 
+            margin-top: 15px; 
+            line-height: 1.5; 
+        }
+        #category-container { 
+            font-size: 14px; 
+            color: #888; 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+        }
+        button { 
+            margin-top: 30px; 
+            padding: 15px 30px; 
+            font-size: 16px; 
+            font-weight: bold;
+            background-color: #ff6b6b; 
+            color: white; 
+            border: none; 
+            border-radius: 25px; 
+            cursor: pointer; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: 0.2s;
+        }
+        button:hover { 
+            background-color: #ff5252; 
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body>
 
-    <div id="category-container">Kategorie lädt...</div>
-    <div id="fact-container">Dein Fakt lädt...</div>
+    <div id="category-container"></div>
+    <div id="fact-container">Dein Fakt wird geladen...</div>
+    <button onclick="zeigeNeuenFakt()">Noch ein Fakt!</button>
 
     <script>
-        // 1. Die CSV-Datei abrufen (Die Datei muss exakt diesen Namen haben!)
-        fetch('Kategorie_Fun_Facts.csv')
-            .then(response => response.text())
-            .then(data => {
-                // 2. Den Text an jedem Zeilenumbruch (\n) in einzelne Zeilen aufteilen
-                const rows = data.split('\n');
-                
-                // 3. Die erste Zeile (Kopfzeile) ignorieren und leere Zeilen herausfiltern
-                const validRows = rows.slice(1).filter(row => row.trim() !== '');
+        // Hier sind alle Fakten sicher direkt hinterlegt
+        const faktenDaten = `Tiere;Der Floh kann bis zum 200-fachen seiner eigenen Höhe springen. Das entspricht dem Sprung eines Menschen auf das Empire State Building in New York.
+Tiere;In der Karibik gibt es Austern, die auf Bäume klettern können.
+Tiere;Der Kolibri ist die einzige Vogelart, die rückwärts fliegen kann.
+Tiere;Das tödlichste Tier der Welt ist weder der Hai, noch das Krokodil – sondern der Moskito.
+Tiere;Koalas schlafen etwa 22 Stunden am Tag.
+Tiere;Die Zunge eines Blauwals wiegt etwa so viel wie ein kleines Auto.
+Tiere;Ein Kamel kann in 15 Minuten etwa 200 Liter Wasser trinken.
+Tiere;In einem Hektar Grünfläche verstecken sich rund 50.000 Spinnen.
+Tiere;Die Fledermaus ist das einzige Säugetier, das fliegen kann.
+Tiere;Manche männliche Singvögel singen mehr als 2.000 Mal am Tag.
+Tiere;Eine Tarantel-Spinne überlebt bis zu zwei Jahre ohne Essen.
+Tiere;Die Hausfliege summt in der Tonart F-Dur.
+Tiere;Schmetterlinge schmecken mit ihren Füßen.
+Tiere;Im Zweiten Weltkrieg haben die Amerikaner Fledermäuse trainiert, damit sie Bomben abwerfen.
+Tiere;Die Honigbiene existiert schon seit schätzungsweise 50 Millionen Jahren.
+Tiere;Pro Ohr verfügt die Katze über 32 Muskeln.
+Tiere;Ein Fohlen kann schon wenige Stunden nach der Geburt stehen und rennen.
+Tiere;Ein Specht kann pro Sekunde etwa 15 bis 20 Mal picken.
+Tiere;Ein Elefant kann Wasser aus einer Entfernung von etwa vier Kilometern riechen.
+Tiere;Das Herz eines Wals schlägt nur vier bis neun Mal pro Minute.
+Tiere;Der Seestern ist das einzige Tier, das seinen Magen von innen nach außen stülpen kann.
+Tiere;Haie existieren bereits länger als Dinosaurier.
+Tiere;Das schwerste bisher gefundene Exemplar eines Tintenfischs wog 450 Kilogramm.
+Tiere;Seesterne haben fünf Augen – eines am Ende jedes Beines.
+Tiere;Katzen hören Ultraschall.
+Tiere;Manche Hunde- und Katzenrassen sind so intelligent wie ein zweijähriges Kind.
+Tiere;Unter den Überlebenden des Titanic-Unfalls gab es drei Hunde.
+Tiere;Schlangen zwinkern nicht.
+Tiere;Die Netze der Seidenspinne sind aufgrund ihrer Reißfestigkeit Gegenstand der Forschung.
+Tiere;Geparden fauchen wie Katzen.
+Tiere;Eisbären haben schwarze Haut.
+Weltall;Im Zentrum unserer Galaxie soll sich ein supermassereiches Schwarzes Loch befinden, das 4 Millionen Mal so groß ist wie die Sonne.
+Weltall;Nach aktuellem Stand würde ein modernes Raumschiff etwa 450 Millionen Jahre brauchen, um zum Zentrum unserer Galaxie zu kommen.
+Weltall;Venus ist der heißeste Planet mit einer Temperatur von 430 Grad Celsius.
+Weltall;Die Sonne umfasst etwa 99 Prozent der Masse in unserer Galaxie.
+Weltall;Forschende entdeckten im Weltraum ein Radiosignal aus 9 Milliarden Lichtjahren Entfernung.
+Weltall;Auf dem Planeten Venus regnet es Säure.
+Weltall;Jedes Jahr entfernt sich der Mond rund vier Zentimeter von der Erde.
+Weltall;Der Weltraum ist vollkommen still, da dort ein Vakuum herrscht.
+Weltall;Die Menschheit weiß mehr über den Mond als über die Ozeane auf der Erde.
+Weltall;Der Blick in den Sternenhimmel zeigt immer nur die Vergangenheit.
+Weltall;Die Lichtstrahlen der Sonne benötigen acht Minuten, bis sie auf der Erde eintreffen.
+Weltall;Selbst mit Lichtgeschwindigkeit würden wir vier Jahre brauchen, um den nahegelegensten Stern zu erreichen.
+Weltall;Der Mond ist der Grund, warum es auf der Erde Gezeiten und Wellen gibt.
+Weltall;Australien ist im Durchmesser etwa 600 Kilometer größer als der Mond.
+Weltall;Normale Stifte funktionieren im Weltall nicht, denn sie sind auf Schwerkraft angewiesen.
+Weltall;Auf dem Saturn und Jupiter regnet es Diamanten.
+Weltall;Alle Planeten in unserem Sonnensystem würden zwischen die Erde und den Mond passen.
+Weltall;Etwa 27 Prozent des Universums besteht aus Dunkler Materie.
+Weltall;Der Zwergplanet Pluto ist halb so groß wie die USA.
+Weltall;Der Planet Jupiter hat 79 Monde.
+Weltall;Astronomen haben eine Wasserwolke entdeckt, die 140 Billionen Mal so viel Wasser enthält wie die Ozeane der Erde.
+Weltall;Die durchschnittliche Temperatur im Universum beträgt minus 270 Grad Celsius.
+Weltall;Während sich das Universum ausdehnt, kühlt es sich ab.
+Weltall;Sterne bestehen aus galaktischem Staub.
+Weltall;Die Sonne erreicht Temperaturen von über 5500 Grad Celsius.
+Weltall;Berühren sich zwei Teile der gleichen Art von Metall im Weltraum, verbinden sie sich dauerhaft.
+Weltall;In 3,75 Milliarden Jahren werden die Milchstraße und die Andromeda-Galaxie zusammenstoßen.
+Weltall;Auf dem Mars existiert ein Vulkan, der fast dreimal so groß ist wie der Mount Everest.
+Menschlicher Körper;Der Mensch atmet immer nur durch ein Nasenloch zur gleichen Zeit.
+Menschlicher Körper;Dein Gehirn selbst empfindet keine Schmerzen.
+Menschlicher Körper;Auf der Erde werden die Bandscheiben durch die Schwerkraft zusammengedrückt, wodurch wir über den Tag schrumpfen.
+Menschlicher Körper;Im Körper eines Menschen stecken rund 38 Billionen Bakterien.
+Menschlicher Körper;Nur zwei Prozent der Weltbevölkerung besitzt grüne Augen.
+Menschlicher Körper;Der Mensch teilt sich über 98 Prozent der DNA mit Schimpansen.
+Menschlicher Körper;Warum genau der Mensch gähnt, ist bislang nicht geklärt.
+Menschlicher Körper;Unsere Erinnerungen verändern sich im Laufe der Zeit, wenn wir an sie denken.
+Menschlicher Körper;Du kannst nicht gleichzeitig atmen und schlucken.
+Menschlicher Körper;Auf deiner Zunge befinden sich rund 8.000 Geschmacksknospen.
+Menschlicher Körper;Ein Mensch produziert in seinem Leben knapp 40.000 Liter Speichel.
+Menschlicher Körper;Befindet sich der Mensch im Weltraum, wird er bis zu zwei Zentimeter größer.
+Menschlicher Körper;Dein Blut braucht weniger als eine Minute, um durch den kompletten Kreislauf zu rauschen.
+Menschlicher Körper;Wenn du Musik hörst, passt sich der Rhythmus deines Herzens der Musik an.
+Menschlicher Körper;Die Länge aller Blutgefäße im menschlichen Körper beträgt 100.000 Kilometer.
+Menschlicher Körper;Unsere Magensäure kann auch mit Metallen reagieren und sie auflösen.
+Menschlicher Körper;Jeder Mensch hat einen einzigartigen Zungenabdruck.
+Menschlicher Körper;Pro Tag verlieren wir rund ein Gramm Hautschuppen.
+Menschlicher Körper;Dein Gehirn ist das Organ mit dem höchsten Energieverbrauch.
+Menschlicher Körper;Frauenherzen schlagen etwas schneller als Männerherzen.
+Menschlicher Körper;Der menschliche Körper verfügt über 206 Knochen.
+Menschlicher Körper;Um deine Stirn zu runzeln, muss dein Körper rund 40 Muskeln beanspruchen.
+Menschlicher Körper;Ein Wimpernschlag dauert ungefähr 0,15 Sekunden.
+Menschlicher Körper;Wir verbringen rund sieben Stunden im Jahr sitzend auf der Toilette.
+Menschlicher Körper;Der stärkste Muskel im menschlichen Körper ist der Kiefer.
+Menschlicher Körper;Den schnellsten Muskel besitzt das Auge.
+Menschlicher Körper;Der Körper verfügt über zwei bis fünf Millionen Schweißdrüsen.
+Menschlicher Körper;Deine Zähne sind ein Teil deines Skeletts, zählen aber nicht als Knochen.
+Menschlicher Körper;Ohne deinen kleinen Finger würdest du die Hälfte der Kraft in der Hand verlieren.
+Menschlicher Körper;Zwei Drittel der Menschen neigen ihren Kopf beim Küssen nach rechts.
+Erde;Es gibt mehr Bäume auf der Erde als Sterne im Weltall.
+Erde;Afrika erstreckt sich über alle vier Hemisphären.
+Erde;Das Gold im Erdmantel soll eigentlich aus dem All gekommen sein.
+Erde;Amerika wurde nicht von Kolumbus entdeckt, die Wikinger waren vorher da.
+Erde;Etwa 80 Prozent aller Pflanzen auf der Welt sind unter Wasser.
+Erde;Island wächst jedes Jahr um fünf Zentimeter.
+Erde;Unser Planet ist nicht gänzlich rund, er ist an den Polen abgeflacht.
+Erde;Die Gravitation ist nicht überall auf der Erde gleich.
+Erde;Ein Blitz kann bis zu 30.000 Grad Celsius heiß werden.
+Erde;Etwa 95 Prozent der Ozeane sind unerforscht.
+Erde;Die Antarktis beherbergt 70 Prozent des Süßwassers der Erde.
+Erde;In der iranischen Wüste Dasht-e Lut herrschen teilweise Temperaturen von 70 Grad Celsius.
+Erde;Die größte Wüste der Welt ist eine Eiswüste in der Antarktis.
+Erde;Der Kilauea auf Hawaii ist der aktivste Vulkan der Welt.
+Top 10;Sieben Prozent der amerikanischen Erwachsenen glauben, dass Schokoladenmilch von braunen Kühen stammt.
+Top 10;Tiramisu bedeutet auf Italienisch "Nimm mich mit in den Himmel".
+Top 10;Blauäugige Menschen vertragen mehr Alkohol als dunkeläugige.
+Top 10;Auf der Zunge einer Weinbergschnecke lassen sich etwa 40.000 Zähne finden.
+Top 10;Azteken haben den Flummi erfunden.
+Top 10;In Schottland soll es über 400 verschiedene Wörter geben, die Schnee beschreiben.
+Top 10;Anatidaephobie ist die Angst, von einer Ente beobachtet zu werden.
+Top 10;Pferde können nicht durch ihren Mund atmen.
+Top 10;In der Schweiz ist es verboten, ein einzelnes Meerschweinchen zu halten.
+Top 10;Auberginen enthalten geringe Mengen an Nikotin.
+Weitere Facts;Ein Tornado kann schneller sein als ein Flugzeug im Landeanflug.
+Weitere Facts;In Japan wird für Mangas mehr Papier verwendet als für Toilettenpapier.
+Weitere Facts;Die Bananenpflanze zählt eigentlich zu den Kräutern.
+Weitere Facts;Die Römer benutzten ihren Urin als Mundwasser.
+Weitere Facts;Niemand weiß, wer Jack the Ripper war.
+Weitere Facts;Früher gab es spezielle Tassen für Schnurrbartträger, um den Bart zu schützen.
+Weitere Facts;Kleopatra stammt nicht aus Ägypten, sondern aus Griechenland.
+Weitere Facts;In den 1830er-Jahren wurde Ketchup als Medizin verkauft.
+Weitere Facts;Im 17. und 18. Jahrhundert hielt man Tomaten für giftig.
+Weitere Facts;Der Homo sapiens existierte zeitgleich zum Neandertaler.
+Weitere Facts;Eine Wolke kann bis zu 10.000 Kilogramm schwer sein.
+Weitere Facts;Der Eiffelturm wird im Sommer circa 30 Zentimeter größer.
+Weitere Facts;Russland hat eine größere Fläche als der Zwergplanet Pluto.
+Weitere Facts;Alle Clownfische werden männlich geboren.
+Weitere Facts;Das Chupa-Chups-Logo wurde von Salvador Dali entworfen.
+Weitere Facts;Sigmund Freud geriet durch Selbstexperimente in eine Kokainabhängigkeit.
+Weitere Facts;Wassermelonen zählen zu den Beeren.
+Weitere Facts;Alle zwei Minuten machen Menschen mehr Fotos als im gesamten 19. Jahrhundert.
+Weitere Facts;Die Giraffe hat genauso viele Halswirbel wie der Mensch, nämlich sieben.`;
 
-                // 4. Eine zufällige Zeile auswählen
-                const randomIndex = Math.floor(Math.random() * validRows.length);
-                const randomRow = validRows[randomIndex];
+        let alleFakten = [];
 
-                // 5. Die Zeile am Semikolon aufteilen, um Kategorie und Fakt zu trennen
-                const columns = randomRow.split(';');
-
-                // 6. Prüfen, ob wir wirklich zwei Spalten haben, und dann anzeigen
-                if (columns.length >= 2) {
-                    const category = columns[0].trim();
-                    const fact = columns[1].trim();
-
-                    document.getElementById('category-container').innerText = category;
-                    document.getElementById('fact-container').innerText = fact;
-                } else {
-                    document.getElementById('fact-container').innerText = "Fehler beim Lesen des Fakts.";
+        // Die Daten im Hintergrund sortieren
+        const zeilen = faktenDaten.split('\n');
+        for (let i = 0; i < zeilen.length; i++) {
+            let zeile = zeilen[i].trim();
+            if (zeile !== "") {
+                let teile = zeile.split(';');
+                if(teile.length >= 2) {
+                    alleFakten.push({ kategorie: teile[0].trim(), fakt: teile[1].trim() });
                 }
-            })
-            .catch(error => {
-                // Falls die Datei nicht gefunden wird
-                document.getElementById('fact-container').innerText = "Konnte die CSV-Datei nicht laden.";
-                document.getElementById('category-container').innerText = "Fehler";
-                console.error('Fehler:', error);
-            });
+            }
+        }
+
+        // Funktion, um einen zufälligen Fakt anzuzeigen
+        function zeigeNeuenFakt() {
+            const randomIndex = Math.floor(Math.random() * alleFakten.length);
+            const auswahl = alleFakten[randomIndex];
+            
+            document.getElementById('category-container').innerText = auswahl.kategorie;
+            document.getElementById('fact-container').innerText = auswahl.fakt;
+        }
+
+        // Direkt beim ersten Laden der Seite ausführen
+        window.onload = zeigeNeuenFakt;
     </script>
 
 </body>
