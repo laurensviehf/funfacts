@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zufälliger Fun Fact</title>
+    <style>
+        /* Ein bisschen Styling für die Optik */
+        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background-color: #f4f4f9; }
+        #fact-container { font-size: 24px; font-weight: bold; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-top: 10px; }
+        #category-container { font-size: 14px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+    </style>
+</head>
+<body>
+
+    <div id="category-container">Kategorie lädt...</div>
+    <div id="fact-container">Dein Fakt lädt...</div>
+
+    <script>
+        // 1. Die CSV-Datei abrufen (Die Datei muss exakt diesen Namen haben!)
+        fetch('fakten.csv')
+            .then(response => response.text())
+            .then(data => {
+                // 2. Den Text an jedem Zeilenumbruch (\n) in einzelne Zeilen aufteilen
+                const rows = data.split('\n');
+                
+                // 3. Die erste Zeile (Kopfzeile) ignorieren und leere Zeilen herausfiltern
+                const validRows = rows.slice(1).filter(row => row.trim() !== '');
+
+                // 4. Eine zufällige Zeile auswählen
+                const randomIndex = Math.floor(Math.random() * validRows.length);
+                const randomRow = validRows[randomIndex];
+
+                // 5. Die Zeile am Semikolon aufteilen, um Kategorie und Fakt zu trennen
+                const columns = randomRow.split(';');
+
+                // 6. Prüfen, ob wir wirklich zwei Spalten haben, und dann anzeigen
+                if (columns.length >= 2) {
+                    const category = columns[0].trim();
+                    const fact = columns[1].trim();
+
+                    document.getElementById('category-container').innerText = category;
+                    document.getElementById('fact-container').innerText = fact;
+                } else {
+                    document.getElementById('fact-container').innerText = "Fehler beim Lesen des Fakts.";
+                }
+            })
+            .catch(error => {
+                // Falls die Datei nicht gefunden wird
+                document.getElementById('fact-container').innerText = "Konnte die CSV-Datei nicht laden.";
+                document.getElementById('category-container').innerText = "Fehler";
+                console.error('Fehler:', error);
+            });
+    </script>
+
+</body>
+</html>
